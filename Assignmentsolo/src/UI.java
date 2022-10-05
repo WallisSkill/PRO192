@@ -537,7 +537,6 @@ public class UI extends javax.swing.JFrame {
             float ws = Float.parseFloat(txtWorkshop.getText());
             float fe = Float.parseFloat(txtFE.getText());
             if (pt >= 0 && pt <= 10 && asg >= 0 && asg <= 10 && pe >= 0 && pe <= 10 && ws >= 0 && ws <= 10 && fe >= 0 && fe <= 10) {
-                model.removeRow(i);
                 float average = (float) (10.0 * pt / 100.0 + 10.0 * asg / 100.0 + 10.0 * ws / 100.0 + 40.0 * pe / 100.0 + 30.0 * fe / 100.0);
                 String status;
                 if (pt > 0 && asg > 0 && pe > 0 && ws > 0 && fe > 4 && average > 5) {
@@ -545,22 +544,20 @@ public class UI extends javax.swing.JFrame {
                 } else {
                     status = "Incompleted";
                 }
-                Student ts = new Student(ID, name, gender, pt, asg, ws, pe, fe, average, status);
-                ArrayList<Student> sv = new ArrayList<>();
-                sv.add(ts);
-                model = (DefaultTableModel) jTable1.getModel();
-                model.addRow(new Object[]{
-                    ts.getID() + "",
-                    ts.getName() + "",
-                    ts.getGender() + "",
-                    ts.getPt() + "",
-                    ts.getAssignment() + "",
-                    ts.getWorkshop() + "",
-                    ts.getPE() + "",
-                    ts.getFE() + "",
-                    ts.getAverage() + "",
-                    ts.getStatus() + "",});
-            }         
+                model.setValueAt(txtID.getText(), i, 0);
+                model.setValueAt(txtName.getText(), i, 1);
+                model.setValueAt(txtGender.getSelectedItem().toString(), i, 2);
+                model.setValueAt(txtPT.getText(), i, 3);
+                model.setValueAt(txtAsg.getText(), i, 4);
+                model.setValueAt(txtWorkshop.getText(), i, 5);
+                model.setValueAt(txtPE.getText(), i, 6);
+                model.setValueAt(txtFE.getText(), i, 7);
+                model.setValueAt(average, i, 8);
+                model.setValueAt(status, i, 9);
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "Wrong infomation input please check again");
+            }
     }//GEN-LAST:event_jButton1ActionPerformed
     }
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
