@@ -386,7 +386,7 @@ public class UI extends javax.swing.JFrame {
             if (pt >= 0 && pt <= 10 && asg >= 0 && asg <= 10 && pe >= 0 && pe <= 10 && ws >= 0 && ws <= 10 && fe >= 0 && fe <= 10) {
                 float average = (float) (10.0 * pt / 100.0 + 10.0 * asg / 100.0 + 10.0 * ws / 100.0 + 40.0 * pe / 100.0 + 30.0 * fe / 100.0);
                 String status;
-                if (pt > 0 && asg > 0 && pe > 0 && ws > 0 && fe > 4 && average > 5) {
+                if (pt > 0 && asg > 0 && pe > 0 && ws > 0 && fe >= 4 && average >= 5) {
                     status = "Completed";
                 } else {
                     status = "Incompleted";
@@ -539,7 +539,7 @@ public class UI extends javax.swing.JFrame {
             if (pt >= 0 && pt <= 10 && asg >= 0 && asg <= 10 && pe >= 0 && pe <= 10 && ws >= 0 && ws <= 10 && fe >= 0 && fe <= 10) {
                 float average = (float) (10.0 * pt / 100.0 + 10.0 * asg / 100.0 + 10.0 * ws / 100.0 + 40.0 * pe / 100.0 + 30.0 * fe / 100.0);
                 String status;
-                if (pt > 0 && asg > 0 && pe > 0 && ws > 0 && fe > 4 && average > 5) {
+                if (pt > 0 && asg > 0 && pe > 0 && ws > 0 && fe >= 4.0 && average >= 5.0) {
                     status = "Completed";
                 } else {
                     status = "Incompleted";
@@ -547,11 +547,11 @@ public class UI extends javax.swing.JFrame {
                 model.setValueAt(txtID.getText(), i, 0);
                 model.setValueAt(txtName.getText(), i, 1);
                 model.setValueAt(txtGender.getSelectedItem().toString(), i, 2);
-                model.setValueAt(txtPT.getText(), i, 3);
-                model.setValueAt(txtAsg.getText(), i, 4);
-                model.setValueAt(txtWorkshop.getText(), i, 5);
-                model.setValueAt(txtPE.getText(), i, 6);
-                model.setValueAt(txtFE.getText(), i, 7);
+                model.setValueAt(pt, i, 3);
+                model.setValueAt(asg, i, 4);
+                model.setValueAt(ws, i, 5);
+                model.setValueAt(pe, i, 6);
+                model.setValueAt(fe, i, 7);
                 model.setValueAt(average, i, 8);
                 model.setValueAt(status, i, 9);
             }

@@ -37,7 +37,7 @@ public class Checkinput {
         String falsename ="false";
         char[] a = name.toCharArray();
         for (int i = 0; i < name.length(); i++) {
-            if((a[i]>='a'|| a[i]<='z')||(a[i]>='A'|| a[i]<='Z')){
+            if((a[i]>='a'&& a[i]<='z')||(a[i]>='A'&& a[i]<='Z')||a[i]==' '){
                     count =1;
                     
             }
