@@ -22,24 +22,18 @@ import java.awt.Image;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import javax.swing.ImageIcon;
+import static java.nio.file.Files.list;
+import java.text.DecimalFormat;
+import static java.util.Collections.list;
+import java.util.TimerTask;
+import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import javax.swing.ListModel;
+import java.util.Timer;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -102,6 +96,7 @@ public class UI extends javax.swing.JFrame {
         jButton4 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        txtalert = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -190,6 +185,35 @@ public class UI extends javax.swing.JFrame {
         jLabel8.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel8.setText("Workshop:");
 
+        txtPT.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPTActionPerformed(evt);
+            }
+        });
+        txtPT.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtPTKeyPressed(evt);
+            }
+        });
+
+        txtAsg.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtAsgKeyPressed(evt);
+            }
+        });
+
+        txtPE.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtPEKeyPressed(evt);
+            }
+        });
+
+        txtFE.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtFEKeyPressed(evt);
+            }
+        });
+
         jLabel11.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel11.setText("Practical Exam:");
 
@@ -220,6 +244,12 @@ public class UI extends javax.swing.JFrame {
             }
         });
 
+        txtWorkshop.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtWorkshopKeyPressed(evt);
+            }
+        });
+
         jButton4.setText("Delete");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -243,19 +273,15 @@ public class UI extends javax.swing.JFrame {
             }
         });
 
+        txtalert.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        txtalert.setForeground(new java.awt.Color(102, 255, 51));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(txtid2, javax.swing.GroupLayout.PREFERRED_SIZE, 383, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(Sort, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -276,7 +302,10 @@ public class UI extends javax.swing.JFrame {
                                         .addGap(30, 30, 30)
                                         .addComponent(jLabel3)
                                         .addGap(18, 18, 18)
-                                        .addComponent(txtGender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addComponent(txtGender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addContainerGap()
+                                        .addComponent(txtalert, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addGap(82, 82, 82)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel6)
@@ -288,89 +317,100 @@ public class UI extends javax.swing.JFrame {
                             .addComponent(txtAsg, javax.swing.GroupLayout.Alignment.LEADING))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(109, 109, 109)
-                                .addComponent(jLabel11)
-                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(109, 109, 109)
+                                        .addComponent(jLabel11))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(107, 107, 107)
+                                        .addComponent(jLabel12)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtFE, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtPE, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(14, 14, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtPE, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-                                    .addComponent(txtFE)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(107, 107, 107)
-                                .addComponent(jLabel12)))
-                        .addGap(6, 6, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(3, 3, 3))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jScrollPane1)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(txtid2, javax.swing.GroupLayout.PREFERRED_SIZE, 383, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(Sort, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addComponent(txtid2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(7, 7, 7)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(Sort, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(4, 4, 4)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 465, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Sort, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtid2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(txtPE, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton2))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(3, 3, 3)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(txtPT, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel5))
-                            .addComponent(jLabel11)
+                                .addComponent(jLabel5)
+                                .addComponent(jLabel11)
+                                .addComponent(txtPE, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(4, 4, 4)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabel1)
-                                    .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(12, 12, 12)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel2)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(9, 9, 9)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel6)
+                                    .addComponent(txtAsg, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(9, 9, 9)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel6)
-                            .addComponent(txtAsg, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
+                        .addGap(4, 4, 4)
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtFE, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1)))
+                            .addComponent(txtFE, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton1))))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(txtGender, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel3))
-                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtWorkshop, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(12, 12, 12)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtWorkshop, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                            .addComponent(txtGender, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jLabel3))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtalert, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(15, 15, 15))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         pack();
@@ -397,7 +437,6 @@ public class UI extends javax.swing.JFrame {
         String wsstring = txtWorkshop.getText();
         ID = a.CheckID(ID);
         name = a.CheckName(name);
-        System.out.println(ID);
         ptstring = a.CheckFloat(ptstring);
         asgstring = a.CheckFloat(asgstring);
         pestring = a.CheckFloat(pestring);
@@ -414,8 +453,15 @@ public class UI extends javax.swing.JFrame {
             float pe = Float.parseFloat(txtPE.getText());
             float ws = Float.parseFloat(txtWorkshop.getText());
             float fe = Float.parseFloat(txtFE.getText());
+            DecimalFormat df = new DecimalFormat("#.##");
+            pt =Float.parseFloat(df.format(pt));
+            asg =Float.parseFloat(df.format(asg));
+            pe =Float.parseFloat(df.format(pe));
+            ws =Float.parseFloat(df.format(ws));
+            fe =Float.parseFloat(df.format(fe));          
             if (pt >= 0 && pt <= 10 && asg >= 0 && asg <= 10 && pe >= 0 && pe <= 10 && ws >= 0 && ws <= 10 && fe >= 0 && fe <= 10) {
                 float average = (float) (10.0 * pt / 100.0 + 10.0 * asg / 100.0 + 10.0 * ws / 100.0 + 40.0 * pe / 100.0 + 30.0 * fe / 100.0);
+                average =Float.parseFloat(df.format(average));
                 String status;
                 if (pt > 0 && asg > 0 && pe > 0 && ws > 0 && fe >= 4 && average >= 5) {
                     status = "Completed";
@@ -450,15 +496,19 @@ public class UI extends javax.swing.JFrame {
                 if (mw == 1) {
                     sv.remove(ts);
                     model.removeRow(model.getRowCount() - 1);
+                    txtID.setText("");
+                    txtAsg.setText("");
+                    txtFE.setText("");
+                    txtGender.setSelectedIndex(0);
+                    txtWorkshop.setText("");
+                    txtName.setText("");
+                    txtPT.setText("");
+                    txtPE.setText("");
                 }
-                txtID.setText("");
-                txtAsg.setText("");
-                txtFE.setText("");
-                txtGender.setSelectedIndex(0);
-                txtWorkshop.setText("");
-                txtName.setText("");
-                txtPT.setText("");
-                txtPE.setText("");
+                else{
+                    txtalert.setText("Add Successfully!!!");
+                    time();
+                }
             } else {
                 JOptionPane.showMessageDialog(null, "Wrong infomation input please check again");
 
@@ -475,26 +525,44 @@ public class UI extends javax.swing.JFrame {
     private void txtIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIDActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtIDActionPerformed
-
+    public void time(){
+        Timer timer =new Timer();
+        TimerTask task = new TimerTask(){
+            @Override
+            public void run() {
+                txtalert.setText("");
+            }          
+        };
+        timer.schedule(task,1500);
+      
+    }
+    
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
-        model = (DefaultTableModel) jTable1.getModel();
         int i = jTable1.getSelectedRow();
-        model.removeRow(i);
-
+        if(i>=0){
+            int modelRow = jTable1.convertRowIndexToModel( i );
+            model.removeRow( modelRow );
+            txtalert.setText("Delete Successfully!!!");
+            time();
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "Please select a row");
+        }
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
         // TODO add your handling code here:
         int m = jTable1.getSelectedRow();
-        txtID.setText(model.getValueAt(m, 0).toString());
-        txtName.setText(model.getValueAt(m, 1).toString());
-        txtGender.setSelectedItem(model.getValueAt(m, 2).toString());
-        txtPT.setText(model.getValueAt(m, 3).toString());
-        txtAsg.setText(model.getValueAt(m, 4).toString());
-        txtWorkshop.setText(model.getValueAt(m, 5).toString());
-        txtPE.setText(model.getValueAt(m, 6).toString());
-        txtFE.setText(model.getValueAt(m, 7).toString());
+        int modelRow = jTable1.convertRowIndexToModel( m );
+        txtID.setText(model.getValueAt(modelRow, 0).toString());
+        txtName.setText(model.getValueAt(modelRow, 1).toString());
+        txtGender.setSelectedItem(model.getValueAt(modelRow, 2).toString());
+        txtPT.setText(model.getValueAt(modelRow, 3).toString());
+        txtAsg.setText(model.getValueAt(modelRow, 4).toString());
+        txtWorkshop.setText(model.getValueAt(modelRow, 5).toString());
+        txtPE.setText(model.getValueAt(modelRow, 6).toString());
+        txtFE.setText(model.getValueAt(modelRow, 7).toString());
     }//GEN-LAST:event_jTable1MouseClicked
 
     private void txtid2KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtid2KeyReleased
@@ -539,7 +607,11 @@ public class UI extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         model = (DefaultTableModel) jTable1.getModel();
-        int i = jTable1.getSelectedRow();
+        int i;
+        int m = jTable1.getSelectedRow();
+        if(m>=0){
+        int modelRow = jTable1.convertRowIndexToModel( m );
+        int mv =0;
         String ID = txtID.getText();
         String name = txtName.getText();
         String gender = txtGender.getSelectedItem().toString();
@@ -550,7 +622,6 @@ public class UI extends javax.swing.JFrame {
         String wsstring = txtWorkshop.getText();
         ID = a.CheckID(ID);
         name = a.CheckName(name);
-        System.out.println(ID);
         ptstring = a.CheckFloat(ptstring);
         asgstring = a.CheckFloat(asgstring);
         pestring = a.CheckFloat(pestring);
@@ -567,30 +638,68 @@ public class UI extends javax.swing.JFrame {
             float pe = Float.parseFloat(txtPE.getText());
             float ws = Float.parseFloat(txtWorkshop.getText());
             float fe = Float.parseFloat(txtFE.getText());
+            DecimalFormat df = new DecimalFormat("#.##");
+            pt =Float.parseFloat(df.format(pt));
+            asg =Float.parseFloat(df.format(asg));
+            pe =Float.parseFloat(df.format(pe));
+            ws =Float.parseFloat(df.format(ws));
+            fe =Float.parseFloat(df.format(fe));
             if (pt >= 0 && pt <= 10 && asg >= 0 && asg <= 10 && pe >= 0 && pe <= 10 && ws >= 0 && ws <= 10 && fe >= 0 && fe <= 10) {
                 float average = (float) (10.0 * pt / 100.0 + 10.0 * asg / 100.0 + 10.0 * ws / 100.0 + 40.0 * pe / 100.0 + 30.0 * fe / 100.0);
+                average =Float.parseFloat(df.format(average));
                 String status;
                 if (pt > 0 && asg > 0 && pe > 0 && ws > 0 && fe >= 4 && average >= 5) {
                     status = "Completed";
                 } else {
                     status = "Incompleted";
                 }
-                model.setValueAt(txtID.getText(), i, 0);
-                model.setValueAt(txtName.getText(), i, 1);
-                model.setValueAt(txtGender.getSelectedItem().toString(), i, 2);
-                model.setValueAt(txtPT.getText(), i, 3);
-                model.setValueAt(txtAsg.getText(), i, 4);
-                model.setValueAt(txtWorkshop.getText(), i, 5);
-                model.setValueAt(txtPE.getText(), i, 6);
-                model.setValueAt(txtFE.getText(), i, 7);
-                model.setValueAt(average, i, 8);
-                model.setValueAt(status, i, 9);              
+                for (i = 0; i < model.getRowCount() - 1; i++) {
+                    if(i==modelRow){
+                        if(!(modelRow==model.getRowCount() - 1))
+                        i++;
+                        else{
+                        }
+                    }
+                    String test = model.getValueAt(i, 0).toString();
+                    if (ID.equals(test)) {
+                        JOptionPane.showMessageDialog(null, "Existed ID Number");
+                        mv=1;
+                        break;
+                    }
+                }
+                if(mv==0){
+                model.setValueAt(txtID.getText(), modelRow, 0);
+                model.setValueAt(txtName.getText(), modelRow, 1);
+                model.setValueAt(txtGender.getSelectedItem().toString(), modelRow, 2);
+                model.setValueAt(pt, modelRow, 3);
+                model.setValueAt(asg, modelRow, 4);
+                model.setValueAt(pe, modelRow, 5);
+                model.setValueAt(ws, modelRow, 6);
+                model.setValueAt(fe, modelRow, 7);
+                model.setValueAt(average, modelRow, 8);
+                model.setValueAt(status, modelRow, 9);
+                txtID.setText("");
+                txtAsg.setText("");
+                txtFE.setText("");
+                txtGender.setSelectedIndex(0);
+                txtWorkshop.setText("");
+                txtName.setText("");
+                txtPT.setText("");
+                txtPE.setText("");
+                txtalert.setText("Update Successfully!!!");
+                time();
+                }  
             }
             else{
                 JOptionPane.showMessageDialog(null, "Wrong infomation input please check again");
             }
+        }   
     }//GEN-LAST:event_jButton1ActionPerformed
+        else{
+            JOptionPane.showMessageDialog(null, "Please select a row");
+        }
     }
+    
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
         File file = null;
@@ -609,16 +718,63 @@ public class UI extends javax.swing.JFrame {
             bwrite.write("\n");
             for (int j = 0; j < model.getRowCount(); j++) {
                 for (int k = 0; k < model.getColumnCount(); k++) {
-                    bwrite.write(model.getValueAt(j,k)+ "\t");
+                    bwrite.write(jTable1.getValueAt(j, k)+ "\t");
                 }
                 bwrite.write("\n");
             }
             bwrite.close();
-            JOptionPane.showMessageDialog(null, "Exported Successfully !!.....");
+            txtalert.setText("Exported Successfully !!.....");
+            time();
         }catch(Exception e){
-            JOptionPane.showMessageDialog(null, "Exported UnSuccessfully");
+            txtalert.setText("Exported UnSuccessfully!!....");
+            time();
         }
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void txtPTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPTActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_txtPTActionPerformed
+
+    private void txtPTKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPTKeyPressed
+        // TODO add your handling code here:
+         if(txtPT.getText().length()>=5)
+    {
+        txtPT.setText(txtPT.getText().substring(0, 4));
+    }
+    }//GEN-LAST:event_txtPTKeyPressed
+
+    private void txtAsgKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAsgKeyPressed
+        // TODO add your handling code here:
+             if(txtAsg.getText().length()>=5)
+    {
+        txtAsg.setText(txtAsg.getText().substring(0, 4));
+    }
+    }//GEN-LAST:event_txtAsgKeyPressed
+
+    private void txtWorkshopKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtWorkshopKeyPressed
+        // TODO add your handling code here:
+        if(txtWorkshop.getText().length()>=5)
+    {
+        txtWorkshop.setText(txtWorkshop.getText().substring(0, 4));
+    }
+    }//GEN-LAST:event_txtWorkshopKeyPressed
+
+    private void txtPEKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPEKeyPressed
+        // TODO add your handling code here:
+          if(txtPE.getText().length()>=5)
+    {
+        txtPE.setText(txtPE.getText().substring(0, 4));
+    }
+    }//GEN-LAST:event_txtPEKeyPressed
+
+    private void txtFEKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFEKeyPressed
+        // TODO add your handling code here:
+         if(txtFE.getText().length()>=5)
+    {
+        txtFE.setText(txtFE.getText().substring(0, 4));
+    }
+    }//GEN-LAST:event_txtFEKeyPressed
             
 
     /**
@@ -680,6 +836,7 @@ public class UI extends javax.swing.JFrame {
     private javax.swing.JTextField txtPE;
     private javax.swing.JTextField txtPT;
     private javax.swing.JTextField txtWorkshop;
+    private javax.swing.JLabel txtalert;
     private javax.swing.JTextField txtid2;
     // End of variables declaration//GEN-END:variables
 }

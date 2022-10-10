@@ -1,6 +1,8 @@
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.TimerTask;
+import javax.swing.Timer;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,6 +15,7 @@ import java.util.Scanner;
  * @author Admin
  */
 public class Checkinput {
+    
     public String CheckID(String ID){  
         int count =1;
         String falseid ="false";
@@ -24,7 +27,6 @@ public class Checkinput {
            }catch(Exception e){
                count =0;
             }
-            System.out.println(count);
          if(count==1){
         return ID;
          }
@@ -70,7 +72,10 @@ public class Checkinput {
         }
         else{
         try{
-            System.out.println(number2);
+            System.out.print(number2);
+            int count3 = 1;      
+            System.out.print(String.format("\033[%dA",count3)); // Move up      
+            System.out.print("\033[2K");
             count =1;
         }
         catch(InputMismatchException e){
